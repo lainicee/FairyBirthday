@@ -1,0 +1,560 @@
+/* fairy.css — enchanted atmosphere pack
+   Drop-in AFTER style.css. No need to edit style.css.
+   Philosophy: don't add more boxes, add LIGHT in the negative space.
+*/
+
+:root {
+  --fairy-lavender-glow: rgba(185,187,231,0.18);
+  --fairy-rose-glow: rgba(230,165,184,0.16);
+  --fairy-gold: rgba(242,195,79,0.14);
+  --fairy-mist: rgba(244,241,234,0.04);
+}
+
+/* ---- 0. DEPTH BASE: light leaks + vignette ---- */
+body::before {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  pointer-events: none;
+  z-index: -2;
+  background:
+    radial-gradient(900px 700px at 18% 22%, var(--fairy-lavender-glow), transparent 62%),
+    radial-gradient(700px 600px at 82% 78%, var(--fairy-rose-glow), transparent 65%),
+    radial-gradient(500px 400px at 50% 45%, var(--fairy-gold), transparent 72%),
+    radial-gradient(1200px 800px at 50% 120%, rgba(13,15,26,0.9), transparent 50%);
+  animation: fairyLeakDrift 22s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
+  background: radial-gradient(140% 100% at 50% 50%, transparent 65%, rgba(0,0,0,0.55) 100%);
+  opacity: 0.7;
+}
+
+@keyframes fairyLeakDrift {
+  from { transform: translate3d(-1%, -1%, 0) scale(1); }
+  to   { transform: translate3d(1.5%, 1%, 0) scale(1.05); }
+}
+
+/* ---- 1. FIREFLIES + PETALS ---- */
+#fairyLayer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.firefly {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #fff8cc;
+  box-shadow:
+    0 0 6px 1px rgba(255,240,184,0.9),
+    0 0 14px 3px rgba(242,195,79,0.35),
+    0 0 24px 6px rgba(185,187,231,0.18);
+  opacity: 0;
+  animation: fireflyFloat var(--fly-dur) ease-in-out var(--fly-delay) infinite,
+             fireflyBlink var(--blink-dur) ease-in-out var(--blink-delay) infinite;
+  will-change: transform, opacity;
+}
+
+/* fairy v2: tinted fireflies */
+.firefly.is-rose {
+  background: #ffe3ec;
+  box-shadow:
+    0 0 6px 1px rgba(255,220,232,0.9),
+    0 0 14px 3px rgba(230,165,184,0.4),
+    0 0 24px 6px rgba(230,165,184,0.18);
+}
+
+.firefly.is-lavender {
+  background: #e6e6ff;
+  box-shadow:
+    0 0 6px 1px rgba(220,220,255,0.9),
+    0 0 14px 3px rgba(185,187,231,0.4),
+    0 0 24px 6px rgba(185,187,231,0.18);
+}
+
+.firefly.is-mint {
+  background: #e3fff4;
+  box-shadow:
+    0 0 6px 1px rgba(210,255,235,0.85),
+    0 0 14px 3px rgba(160,230,200,0.32),
+    0 0 22px 5px rgba(160,230,200,0.14);
+}
+
+@keyframes fireflyFloat {
+  0%   { transform: translate3d(0,0,0) }
+  25%  { transform: translate3d(var(--fly-x1), var(--fly-y1), 0) }
+  50%  { transform: translate3d(var(--fly-x2), var(--fly-y2), 0) }
+  75%  { transform: translate3d(var(--fly-x3), var(--fly-y3), 0) }
+  100% { transform: translate3d(0,0,0) }
+}
+
+@keyframes fireflyBlink {
+  0%, 100% { opacity: 0.15 }
+  10% { opacity: 0.9 }
+  20% { opacity: 0.25 }
+  30% { opacity: 1 }
+  45% { opacity: 0.3 }
+}
+
+.fairy-petal {
+  position: absolute;
+  top: -20px;
+  font-family: Georgia, serif;
+  line-height: 1;
+  pointer-events: none;
+  color: var(--rose-light);
+  text-shadow: 0 0 8px rgba(230,165,184,0.6);
+  animation: petalDrift linear forwards;
+  will-change: transform, opacity;
+}
+
+@keyframes petalDrift {
+  0% { transform: translate3d(var(--petal-x), -20px, 0) rotate(0deg) translateX(0); opacity:0 }
+  10% { opacity: 0.7 }
+  40% { transform: translate3d(calc(var(--petal-x) + var(--sway)), 35vh, 0) rotate(180deg) translateX(var(--sway)); }
+  80% { opacity: 0.5 }
+  100% { transform: translate3d(calc(var(--petal-x) + var(--sway2)), 108vh, 0) rotate(720deg) translateX(0); opacity:0 }
+}
+
+/* ---- 2. ENCHANTED FRAMES - makes existing cards glow ---- */
+.scene {
+  position: relative;
+  z-index: 2;
+}
+
+.polaroid,
+.final-letter,
+.resume-card,
+.egg-box {
+  box-shadow:
+    0 0 0 1px rgba(244,241,234,0.08),
+    0 10px 40px rgba(0,0,0,0.45),
+    0 0 0 1px rgba(185,187,231,0.06) inset,
+    0 0 36px rgba(185,187,231,0.07) inset !important;
+}
+
+/* FIX: gift spotlight should be truly invisible container - no square */
+.gift-spotlight {
+  background: rgba(8, 9, 17, 0.58) !important;
+}
+
+.gift-spotlight-content {
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+}
+
+/* FIX: when gift spotlight is open, hide the original gift box underneath */
+.gift-spotlight:not(.hidden) ~ #giftReveal,
+#page6:has(.gift-spotlight:not(.hidden)) #giftReveal,
+body:has(#giftSpotlight:not(.hidden)) #giftBox {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* extra safety - hide the stray #giftSpotlightBox if empty */
+#giftSpotlightBox:empty {
+  display: none !important;
+}
+
+.polaroid::before,
+.polaroid::after {
+  filter: drop-shadow(0 0 6px rgba(185,187,231,0.22)) !important;
+}
+
+/* fairy border dust on final title */
+.finale-title {
+  position: relative;
+}
+
+.finale-title::after {
+  content: "✦  ✧  ✦";
+  position: absolute;
+  top: -1.2em;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.38em;
+  letter-spacing: 0.6em;
+  opacity: 0.35;
+  color: var(--lavender-light);
+  pointer-events: none;
+}
+
+/* ---- 3. MARGINALIA - fills emptiness with story ---- */
+.fairy-marginalia {
+  position: absolute;
+  font-family: "Caveat", cursive;
+  color: rgba(244,241,234,0.38);
+  font-size: clamp(0.95rem, 2.5vw, 1.15rem);
+  pointer-events: none;
+  transform: rotate(var(--rot));
+  text-shadow: 0 0 12px rgba(230,165,184,0.15);
+  z-index: 2;
+  opacity: 0;
+}
+
+.fairy-marginalia.is-left { left: max(-42px, -5vw); }
+.fairy-marginalia.is-right { right: max(-42px, -5vw); }
+
+/* fairy v2: fade only when the scene is actually visible */
+.fairy-marginalia.is-awake {
+  animation: marginaliaIn 1.2s ease forwards;
+  animation-delay: var(--m-delay);
+}
+
+@keyframes marginaliaIn {
+  from { opacity:0; transform: rotate(var(--rot)) translateY(8px); }
+  to { opacity:1; transform: rotate(var(--rot)) translateY(0); }
+}
+
+/* doodle vines */
+.fairy-vine {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  pointer-events: none;
+  opacity: 0.22;
+  z-index: 1;
+}
+
+.fairy-vine path {
+  fill: none;
+  stroke: var(--lavender);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+
+.fairy-vine.is-awake path {
+  animation: vineDraw 2.5s ease forwards;
+  animation-delay: var(--vine-delay);
+}
+
+@keyframes vineDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ---- 4. SPARKLE TEXT + CURSOR FAIRY ---- */
+.fairy-sparkle {
+  position: absolute;
+  pointer-events: none;
+  font-size: 10px;
+  color: var(--sunflower);
+  text-shadow: 0 0 6px currentColor;
+  animation: sparklePop 0.9s ease-out forwards;
+  z-index: 5;
+}
+
+@keyframes sparklePop {
+  0% { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity:0 }
+  20% { opacity:1; transform: translate(-50%, -50%) scale(1.2) rotate(30deg) }
+  100% { transform: translate(-50%, calc(-50% - 34px)) scale(0) rotate(120deg); opacity:0 }
+}
+
+h1:hover .fairy-sparkle-holder::after {
+  content: "";
+}
+
+/* cursor fairy dust (enhances your existing cursorTrail) */
+#fairyCursor {
+  position: fixed;
+  top: 0; left: 0;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff8cc 0%, rgba(242,195,79,0.8) 40%, transparent 70%);
+  box-shadow: 0 0 10px rgba(255,240,184,0.8);
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: screen;
+  opacity: 0;
+  transform: translate3d(-50%, -50%, 0);
+  transition: opacity 0.3s ease;
+}
+
+/* ================= ACT II — DEEP ENCHANTMENT (fairy v2) ================= */
+
+/* ---- 5. AURORA SKY: slow magical ribbons behind everything ---- */
+#fairyAurora {
+  position: fixed;
+  inset: -20%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+  filter: blur(46px) saturate(1.15);
+  opacity: 0.85;
+}
+
+#fairyAurora span {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+}
+
+.fairy-aurora-ribbon {
+  top: -30%;
+  left: -25%;
+  width: 90vmax;
+  height: 55vmax;
+  background: radial-gradient(ellipse at center, rgba(185,187,231,0.20), transparent 65%);
+  animation: auroraDriftA 34s ease-in-out infinite alternate;
+}
+
+.fairy-aurora-ribbon-b {
+  top: 10%;
+  right: -30%;
+  width: 80vmax;
+  height: 60vmax;
+  background: radial-gradient(ellipse at center, rgba(230,165,184,0.17), transparent 65%);
+  animation: auroraDriftB 41s ease-in-out infinite alternate;
+}
+
+.fairy-aurora-ribbon-c {
+  bottom: -35%;
+  left: 5%;
+  width: 75vmax;
+  height: 50vmax;
+  background: radial-gradient(ellipse at center, rgba(150,220,195,0.11), transparent 65%);
+  animation: auroraDriftC 47s ease-in-out infinite alternate;
+}
+
+.fairy-aurora-moon {
+  top: 7%;
+  right: 11%;
+  width: 130px;
+  height: 130px;
+  background: radial-gradient(circle, rgba(244,241,234,0.85) 0%, rgba(244,241,234,0.35) 38%, transparent 70%);
+  filter: blur(2px);
+  animation: moonBreathe 9s ease-in-out infinite alternate;
+}
+
+@keyframes auroraDriftA {
+  from { transform: translate3d(-4%, -2%, 0) rotate(-4deg) scale(1); }
+  to   { transform: translate3d(5%, 4%, 0) rotate(5deg) scale(1.12); }
+}
+
+@keyframes auroraDriftB {
+  from { transform: translate3d(3%, 2%, 0) rotate(3deg) scale(1.05); }
+  to   { transform: translate3d(-5%, -3%, 0) rotate(-6deg) scale(0.95); }
+}
+
+@keyframes auroraDriftC {
+  from { transform: translate3d(0, 3%, 0) scale(1); }
+  to   { transform: translate3d(4%, -3%, 0) scale(1.15); }
+}
+
+@keyframes moonBreathe {
+  from { opacity: 0.65; transform: scale(1); }
+  to   { opacity: 0.95; transform: scale(1.06); }
+}
+
+/* ---- 6. SHIMMER TITLES: h1 drinks moonlight ---- */
+.fairy-shimmer {
+  background: linear-gradient(
+    100deg,
+    var(--paper-cream) 0%,
+    var(--paper-cream) 38%,
+    #fff6d8 47%,
+    var(--lavender-light) 52%,
+    var(--rose-light) 57%,
+    var(--paper-cream) 66%,
+    var(--paper-cream) 100%
+  );
+  background-size: 260% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: shimmerSweep 7.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 14px rgba(213,213,244,0.14));
+}
+
+@keyframes shimmerSweep {
+  0%, 18% { background-position: 115% 0; }
+  55%, 100% { background-position: -115% 0; }
+}
+
+/* ---- 7. ENCHANTED CARD BORDERS: slow spinning starlight rim ---- */
+.fairy-enchanted {
+  position: relative;
+}
+
+.fairy-enchanted::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--rune-angle, 0deg),
+    transparent 0%,
+    rgba(242,195,79,0.55) 10%,
+    rgba(230,165,184,0.55) 20%,
+    transparent 32%,
+    transparent 55%,
+    rgba(185,187,231,0.5) 68%,
+    transparent 80%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  pointer-events: none;
+  animation: runeSpin 6s linear infinite;
+}
+
+.fairy-enchanted.is-awake::before {
+  opacity: 0.75;
+}
+
+@property --rune-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes runeSpin {
+  to { --rune-angle: 360deg; }
+}
+
+/* ---- 8. MAGIC DUST BURSTS on click ---- */
+.fairy-dust {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9998;
+  border-radius: 50%;
+  will-change: transform, opacity;
+  animation: dustFly var(--dust-dur) cubic-bezier(0.15, 0.6, 0.35, 1) forwards;
+}
+
+@keyframes dustFly {
+  0%   { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  70%  { opacity: 0.9; }
+  100% { transform: translate(calc(-50% + var(--dust-x)), calc(-50% + var(--dust-y))) scale(0.15); opacity: 0; }
+}
+
+/* ---- 9. SHOOTING STARS ---- */
+.fairy-shooting-star {
+  position: absolute;
+  width: 90px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255,248,204,0), rgba(255,248,204,0.95));
+  filter: drop-shadow(0 0 6px rgba(255,240,184,0.8));
+  opacity: 0;
+  animation: shootAcross var(--shoot-dur) ease-in forwards;
+  will-change: transform, opacity;
+}
+
+.fairy-shooting-star::after {
+  content: "";
+  position: absolute;
+  right: -2px;
+  top: -2px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fffbe0;
+  box-shadow: 0 0 10px 3px rgba(255,240,184,0.7);
+}
+
+@keyframes shootAcross {
+  0%   { opacity: 0; transform: translate3d(0, 0, 0) rotate(var(--shoot-angle)); }
+  8%   { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(var(--shoot-dist), var(--shoot-fall), 0) rotate(var(--shoot-angle)); }
+}
+
+/* ---- 10. AMBIENT RISING MOTES: the ground is quietly sparkling ---- */
+.fairy-mote {
+  position: absolute;
+  bottom: -12px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255,244,208,0.9);
+  box-shadow: 0 0 8px 2px rgba(242,195,79,0.35);
+  opacity: 0;
+  animation: moteRise var(--mote-dur) ease-in var(--mote-delay) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes moteRise {
+  0%   { transform: translate3d(0, 0, 0) scale(0.6); opacity: 0; }
+  15%  { opacity: var(--mote-peak, 0.5); }
+  85%  { opacity: calc(var(--mote-peak, 0.5) * 0.6); }
+  100% { transform: translate3d(var(--mote-drift), -108vh, 0) scale(1); opacity: 0; }
+}
+
+/* ---- 11. FAIRY-RING CORNERS: tiny glowing toadstool rings in the margins ---- */
+.fairy-ring {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 1;
+}
+
+.fairy-ring.is-awake {
+  animation: fairyRingIn 1.6s ease forwards;
+  animation-delay: var(--ring-delay);
+}
+
+@keyframes fairyRingIn {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 0.5; transform: scale(1); }
+}
+
+.fairy-ring circle {
+  fill: none;
+  stroke: var(--sunflower);
+  stroke-width: 1.4;
+  stroke-dasharray: 2 5;
+  stroke-linecap: round;
+  opacity: 0.75;
+  animation: ringTwinkle 3.2s ease-in-out infinite alternate;
+  animation-delay: var(--ring-delay);
+}
+
+.fairy-ring circle:nth-child(2) {
+  stroke: var(--rose-light);
+  animation-delay: calc(var(--ring-delay) + 0.9s);
+}
+
+@keyframes ringTwinkle {
+  from { opacity: 0.35; }
+  to   { opacity: 0.9; }
+}
+
+/* ---- 5b. PERFORMANCE MODE kills expensive ---- */
+body.performance-mode::before { animation: none; }
+body.performance-mode #fairyLayer { display: none; }
+body.performance-mode #fairyCursor { display: none; }
+body.performance-mode #fairyAurora { display: none; }
+body.performance-mode .fairy-vine path { animation: none; stroke-dashoffset: 0; }
+body.performance-mode::after { display: none; }
+body.performance-mode .fairy-enchanted::before { animation: none; opacity: 0; }
+body.performance-mode .fairy-shimmer { animation: none; }
+
+/* reduced motion: keep static light, kill all movement */
+@media (prefers-reduced-motion: reduce) {
+  #fairyAurora { animation: none; }
+  .fairy-aurora-ribbon, .fairy-aurora-ribbon-b, .fairy-aurora-ribbon-c,
+  .fairy-aurora-moon, .fairy-shimmer { animation: none; }
+  .fairy-enchanted::before { animation: none; }
+}

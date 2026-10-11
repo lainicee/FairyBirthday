@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>a little something</title>
+    <link rel="stylesheet" href="style.css?v=3" />
+    <link rel="stylesheet" href="fairy.css?v=2" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Cormorant+Garamond:wght@400;500;600;700&family=Nunito+Sans:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body>
+    <canvas id="cursorTrail"></canvas>
+
+    <canvas id="grainCanvas" aria-hidden="true"></canvas>
+
+    <div class="photo-wash hidden" id="photoWash" aria-hidden="true">
+      <img class="photo-wash-a" alt="" />
+      <img class="photo-wash-b" alt="" />
+      <img class="photo-wash-c" alt="" />
+      <img class="photo-wash-d" alt="" />
+    </div>
+
+    <div
+      class="photo-overlay hidden"
+      id="photoOverlay"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="photoStoryTitle"
+      aria-describedby="photoStoryText"
+    >
+      <div class="photo-backdrop" id="photoBackdrop"></div>
+      <button
+        class="photo-close"
+        id="photoCloseBtn"
+        type="button"
+        aria-label="Close photo"
+      >
+        &times;
+      </button>
+      <div class="photo-story" id="photoStory">
+        <figure class="photo-frame" id="photoFrame">
+          <img id="overlayImg" src="" alt="" />
+          <figcaption class="caption photo-frame-note" id="photoFrameNote"></figcaption>
+        </figure>
+        <div class="photo-text" id="photoText">
+          <p class="photo-kicker" id="photoKicker"></p>
+          <h2 id="photoStoryTitle"></h2>
+          <span class="photo-squiggle" id="photoSquiggle" aria-hidden="true"></span>
+          <p class="photo-description" id="photoStoryText"></p>
+          <div class="photo-nav" id="photoNav">
+            <button id="photoPrevBtn" type="button" aria-label="Previous photo">
+              ← prev
+            </button>
+            <p class="photo-count" id="photoCount"></p>
+            <button id="photoNextBtn" type="button" aria-label="Next photo">
+              next →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-overlay" id="navOverlay">
+      <button id="rewindBtn" class="hidden">← back</button>
+      <div
+        class="overall-dots"
+        id="overallDots"
+        role="group"
+        aria-label="Journey progress"
+      >
+        <span
+          class="overall-progress"
+          id="overallProgress"
+          aria-live="polite"
+        ></span>
+      </div>
+    </div>
+    <button
+      class="sound-toggle"
+      id="soundToggle"
+      type="button"
+      aria-label="Mute sound effects"
+      aria-pressed="false"
+      title="Mute sound effects"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 9v6h4l5 4V5L8 9H4Z"></path>
+        <path class="sound-wave" d="M16 9a5 5 0 0 1 0 6m2.5-8.5a8.5 8.5 0 0 1 0 11"></path>
+        <path class="sound-muted-mark" d="m16 9 5 6m0-6-5 6"></path>
+      </svg>
+    </button>
+    <button
+      class="performance-toggle"
+      id="performanceToggle"
+      type="button"
+      aria-label="Turn performance mode on"
+      aria-pressed="false"
+      title="♡ Performance mode"
+    >
+      <span aria-hidden="true">♡</span>
+    </button>
+    <button
+      class="background-music-toggle"
+      id="backgroundMusicToggle"
+      type="button"
+      aria-label="Mute background music"
+      aria-pressed="false"
+      title="Mute background music"
+    >
+      <span aria-hidden="true">♫</span>
+    </button>
+    <p
+      class="heart-collection-status hidden"
+      id="heartCollectionStatus"
+      role="status"
+      aria-live="polite"
+    ></p>
+
+    <div class="boot-screen" id="bootScreen">
+      <div class="boot-countdown" id="bootCountdown">
+        <p class="boot-kicker" id="bootKicker">THE NIGHT BEFORE</p>
+        <div
+          class="boot-date-stage"
+          id="bootDateStage"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <time class="boot-date boot-date-before" id="bootDateBefore" datetime="2026-10-10">
+            OCTOBER 10, 2026
+          </time>
+          <time
+            class="boot-date boot-date-after"
+            id="bootDateAfter"
+            datetime="2026-10-11"
+            aria-hidden="true"
+          >
+            OCTOBER 11, 2026
+          </time>
+        </div>
+        <div class="boot-clock-row" aria-hidden="true">
+          <span class="boot-clock-face"><span></span></span>
+          <time class="boot-clock" id="bootClock">11:59:55 PM</time>
+        </div>
+        <p class="boot-clock-caption" id="bootClockCaption">
+          a little more time before your day
+        </p>
+      </div>
+      <button class="boot-skip hidden" id="bootSkipBtn" type="button">
+        Skip intro
+      </button>
+    </div>
+
+    <div
+      class="resume-prompt hidden"
+      id="resumePrompt"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="resumeTitle"
+      aria-describedby="resumeDescription"
+    >
+      <div class="resume-card">
+        <p class="resume-eyebrow">a little something</p>
+        <h2 id="resumeTitle">Welcome back ♡</h2>
+        <p id="resumeDescription">Would you like to pick up where you left off?</p>
+        <div class="resume-actions">
+          <button class="btn-primary" id="resumeContinueBtn" type="button">
+            Continue
+          </button>
+          <button id="resumeStartOverBtn" type="button">Start over</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="scene hidden" id="page1">
+      <p class="stars">✦ ✧ ✦</p>
+      <h1>Hey, darlinn.</h1>
+      <p class="subtitle">A little something for you :3</p>
+      <!-- page1 -->
+      <button id="openBtn" class="btn-primary">Take a look</button>
+    </div>
+
+    <div class="scene hidden" id="page2">
+      <h1>♥ Welcome ♥</h1>
+      <div id="messageLines"></div>
+      <button id="nextBtn" class="hidden">Next Page →</button>
+    </div>
+
+    <div class="scene hidden" id="page3">
+      <h1 class="you-label">
+        YOU
+        <button
+          class="heart-collectible"
+          type="button"
+          data-heart-id="constellation"
+          aria-label="Collect hidden heart"
+          aria-pressed="false"
+        >♡</button>
+      </h1>
+
+      <div class="viewport" id="viewport">
+        <canvas id="bgStars"></canvas>
+
+        <div class="sky-frame" aria-hidden="true"></div>
+        <div class="sky" id="sky">
+          <svg
+            class="lines"
+            id="constellationLines"
+            viewBox="0 0 500 260"
+            preserveAspectRatio="none"
+          ></svg>
+
+          <span
+            class="star"
+            data-x="49.8"
+            data-y="12"
+            data-date="July 14, 2025"
+            data-msg="The first time you ever texted me. It was damn awkward, but I was so happy to hear from you. I remember being so nervous to text you back, but I did it anyway. And I'm glad I did. ♡"
+          ></span>
+          <span
+            class="star"
+            data-x="44.1"
+            data-y="34.3"
+            data-date="July 17, 2025"
+            data-msg="This was when we started becoming closer. I remember I yapped a lot about my life, and you listened. I was so happy to have someone to talk to. ♡"
+          ></span>
+          <span
+            class="star"
+            data-x="39.4"
+            data-y="39.4"
+            data-date="October 17, 2025"
+            data-msg="The first time we hung out in person. I was so nervous, but you made me feel so comfortable and happy of course. I couldn't stop laughing. ♡" 
+          ></span>
+          <span
+            class="star"
+            data-x="33.0"
+            data-y="45.1"
+            data-date="~2 Years Ago, Around Late 2024"
+            data-msg="This is when we first met, first to known each other as colleagues of the student council. I don't remember the exact date but I surely loved working with you as a partner, even before we became close. Every moment with you has been special. ♡"
+          ></span>
+          <span
+            class="star"
+            data-x="66.9"
+            data-y="30.1"
+            data-date="A Moment To Remember"
+            data-msg="Even though the time passed seemed short, I feel like every moment with you has been a lifetime of happiness. I hope we can make more memories together. ♡"
+          ></span>
+          <span
+            class="star"
+            data-x="63.9"
+            data-y="64.2"
+            data-date="2025 - 2026"
+            data-msg="You have changed my life in ways I can't even describe. Every day has been the best days of my life. I am so grateful for you my love."
+          ></span>
+          <span
+            class="star"
+            data-x="50.8"
+            data-y="76.9"
+            data-date="October 11, 2026"
+            data-msg="I hope this year will be filled with even more love, happiness, and memories for us. ♡ uu sm,  Happy birthday baby."
+          ></span>
+          <span class="star npc-star" aria-hidden="true" style="left:50.8%;top:84%;"></span>
+
+        </div>
+      </div>
+
+      <p class="hint-pulse" id="starHint">click any star to reveal</p>
+
+      <div class="progress-dots" id="progressDots"></div>
+      <p
+        class="constellation-completion hidden"
+        id="constellationCompletion"
+        role="status"
+        aria-live="polite"
+      >
+        The stars found their way home. ♡
+      </p>
+
+      <div class="star-reveal" id="starReveal">
+        <svg
+          id="doodleSvg"
+          viewBox="0 0 120 120"
+          class="doodle"
+          aria-hidden="true"
+        ></svg>
+        <p class="star-date" id="starDate"></p>
+        <p id="starMessage" class="star-message"></p>
+      </div>
+
+      <div class="constellation-actions">
+        <button id="backBtn" class="hidden">← go back</button>
+        <button id="toFinaleBtn" class="hidden">continue →</button>
+      </div>
+    </div>
+
+    <div class="scene hidden" id="page4">
+      <h1>
+        A Few Memories
+        <button
+          class="heart-collectible"
+          type="button"
+          data-heart-id="memories"
+          aria-label="Collect hidden heart"
+          aria-pressed="false"
+        >♡</button>
+      </h1>
+      <div class="scrapbook" id="scrapbook">
+        <div class="scrapbook-paper" aria-hidden="true"></div>
+        <svg
+          class="scrapbook-ink"
+          viewBox="0 0 760 440"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <g class="ink-writing">
+            <path
+              d="M24 226c8-8 9 8 16-1s10-10 15-2 9 8 15-2 10-5 15 2 8 4 12-4"
+            />
+            <path d="M25 237c9-3 14 3 22-1s11 1 16-2 10 4 15 0 12 1 19-3" />
+            <path
+              d="M669 48c8-7 8 7 14 1s9-9 14-2 9 7 14-2 9-4 13 2 7 3 11-3"
+            />
+            <path d="M670 59c8-3 13 2 20-1s10 1 15-2 9 3 14 0 10 0 16-3" />
+            <path
+              d="M211 405c8-6 9 6 15 0s9-7 14-1 8 6 13-2 8-3 12 2 7 3 11-3"
+            />
+            <path d="M213 415c7-2 12 2 18-1s9 1 13-2 8 3 12 0 9 0 14-2" />
+          </g>
+          <g class="ink-doodles">
+            <path
+              d="M188 60c6-9 9-9 12 0 9-3 11 0 5 7 6 7 4 10-5 8-3 9-6 9-12 0-8 2-10-1-5-8-5-7-3-10 5-7Z"
+            />
+            <path d="M189 67l10 1m-5-6 1 12" />
+            <path
+              d="M553 381c0-9 6-15 14-15s14 6 14 15-6 15-14 15-14-6-14-15Z"
+            />
+            <path
+              d="M567 359v-6m0 56v-6m-22-22h-6m56 0h-6m-37-15-4-4m40 40-4-4m0-32 4-4m-40 40 4-4"
+            />
+            <path
+              d="M332 46c5-5 10-5 14 0 5 5 5 10 0 14-4 4-9 4-13 0s-3-9 1-12c3-2 6-1 7 2"
+            />
+            <path d="M337 65c8 2 14 1 20-3m-20 8c5 1 10 1 15-1" />
+            <path d="M88 369c8-5 16-5 24 0m-12-13v26m-8-7c5-3 11-3 17 0" />
+          </g>
+          <g class="ink-hatching">
+            <path
+              d="m128 188 9-8m-4 13 10-9m-5 14 9-8m475 68 9-8m-4 13 10-9m-5 14 9-8"
+            />
+          </g>
+        </svg>
+        <svg class="sunflower-library" aria-hidden="true">
+          <symbol id="sunflowerArt" viewBox="0 0 100 140">
+            <path
+              d="M50 48 C49 76 53 102 49 135"
+              fill="none"
+              stroke="#668047"
+              stroke-width="5"
+              stroke-linecap="round"
+            />
+            <path
+              d="M49 82 C31 62 19 70 31 85 C37 92 44 91 49 88 Z"
+              fill="#789253"
+              stroke="#536e3d"
+              stroke-width="1.5"
+            />
+            <path
+              d="M51 104 C69 84 82 92 69 107 C63 114 56 113 51 110 Z"
+              fill="#88a05b"
+              stroke="#536e3d"
+              stroke-width="1.5"
+            />
+            <g fill="#edbd43" stroke="#c28a2d" stroke-width="1.2">
+              <ellipse
+                cx="50"
+                cy="22"
+                rx="7"
+                ry="17"
+                transform="rotate(0 50 40)"
+              />
+              <ellipse
+                cx="50"
+                cy="22"
+                rx="7"
+                ry="17"
+                transform="rotate(30 50 40)"
+              />
+              <ellipse
+                cx="50"
+                cy="22"
+                rx="7"
+                ry="17"
+                transform="rotate(60 50 40)"
+              />
+              <ellipse
+                cx="50"
+                cy="22"
+                rx="7"
+                ry="17"
+                transform="rotate(90 50 40)"
+              />
+              <ellipse
+                cx="50"
+                cy="22"
+                rx="7"
+                ry="17"
+                transform="rotate(120 50 40)"
+              />
+              <ellipse
+                cx="50"
+                cy="22"
+                rx="7"
+                ry="17"
+                transform="rotate(150 50 40)"
+              />
+              <ellipse
+                cx="50"
+                cy="22"
+                rx="7"
+                ry="17"
+                transform="rotate(180 50 40)"
+              />
+              <ellipse
+                cx="50"
+                cy="22"
+                rx="7"
+                ry="17"
+                transform="rotate(210 50 40)"
+              />
+              <ellipse
+                cx="50"
+                cy="22"
+                rx="7"
+                ry="17"
+                transform="rotate(240 50 40)"
+              />
+              <ellipse
+                cx="50"
+                cy="22"
+                rx="7"
+                ry="17"
+                transform="rotate(270 50 40)"
+              />
+              <ellipse
+                cx="50"
+                cy="22"
+                rx="7"
+                ry="17"
+                transform="rotate(300 50 40)"
+              />
+              <ellipse
+                cx="50"
+                cy="22"
+                rx="7"
+                ry="17"
+                transform="rotate(330 50 40)"
+              />
+            </g>
+            <circle cx="50" cy="40" r="13.5" fill="#754a2e" />
+            <circle cx="50" cy="40" r="10" fill="#986238" />
+            <g fill="#e4c27c">
+              <circle cx="46" cy="36" r="1.1" />
+              <circle cx="53" cy="35" r="1" />
+              <circle cx="56" cy="41" r="1.1" />
+              <circle cx="49" cy="44" r="1" />
+              <circle cx="43" cy="42" r="0.9" />
+              <circle cx="52" cy="47" r="0.9" />
+            </g>
+          </symbol>
+        </svg>
+        <svg
+          class="sunflower-flower sunflower-left"
+          viewBox="0 0 100 140"
+          aria-hidden="true"
+        >
+          <use href="#sunflowerArt"></use>
+        </svg>
+        <svg
+          class="sunflower-flower sunflower-right"
+          viewBox="0 0 100 140"
+          aria-hidden="true"
+        >
+          <use href="#sunflowerArt"></use>
+        </svg>
+        <svg
+          class="sunflower-flower sunflower-buddy sunflower-left-buddy"
+          viewBox="0 0 100 140"
+          aria-hidden="true"
+        >
+          <use href="#sunflowerArt"></use>
+        </svg>
+        <svg
+          class="sunflower-flower sunflower-buddy sunflower-right-buddy"
+          viewBox="0 0 100 140"
+          aria-hidden="true"
+        >
+          <use href="#sunflowerArt"></use>
+        </svg>
+        <svg
+          class="sunflower-flower sunflower-buddy sunflower-bottom-left-buddy"
+          viewBox="0 0 100 140"
+          aria-hidden="true"
+        >
+          <use href="#sunflowerArt"></use>
+        </svg>
+        <svg
+          class="sunflower-flower sunflower-buddy sunflower-bottom-right-buddy"
+          viewBox="0 0 100 140"
+          aria-hidden="true"
+        >
+          <use href="#sunflowerArt"></use>
+        </svg>
+        <p class="scrapbook-note">
+          I'm sorry, baby—I really wish I had more photos of you. For now,
+          these are the best ones I could find. ♡
+        </p>
+      </div>
+      <button id="toSongBtn">continue →</button>
+    </div>
+
+    <div class="scene hidden" id="page5">
+      <div class="music-controls">
+        <h1>A Little Music For You</h1>
+        <p class="subtitle">something I made hihi</p>
+
+        <div class="player" id="player">
+          <button id="playBtn" type="button" aria-label="Play song">▶</button>
+          <div
+            class="progress-bar"
+            id="progressBar"
+            role="slider"
+            tabindex="0"
+            aria-label="Song progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <span class="time" id="timeDisplay">0:00 / 0:00</span>
+        </div>
+        <p
+          id="audioStatus"
+          class="audio-status"
+          role="status"
+          aria-live="polite"
+        ></p>
+
+        <canvas id="pulseCanvas" aria-hidden="true"></canvas>
+      </div>
+
+      <div class="credits" id="credits" aria-hidden="true">
+        <div class="credits-track" id="creditsTrack"></div>
+      </div>
+
+      <audio id="audio" src="music/song.mp3" preload="metadata"></audio>
+
+      <button id="toFinaleBtn2">continue →</button>
+    </div>
+
+    <audio
+      id="backgroundMusic"
+      src="music/Celestial Bloom.mp3"
+      preload="auto"
+      loop
+    ></audio>
+
+    <div class="scene hidden" id="pageCake">
+      <h1>Make A Wish</h1>
+      <p class="subtitle" id="cakeHint">hold the button to blow out the candles</p>
+
+      <div class="cake candles-lit" id="cake">
+        <div class="cake-art">
+          <div class="candle" data-lit="true">
+            <div class="flame"></div>
+            <div class="wick"></div>
+          </div>
+          <div class="candle" data-lit="true">
+            <div class="flame"></div>
+            <div class="wick"></div>
+          </div>
+          <div class="candle" data-lit="true">
+            <div class="flame"></div>
+            <div class="wick"></div>
+          </div>
+          <div class="cake-plate"></div>
+          <div class="cake-body"></div>
+          <div class="cake-top">
+            <span class="icing-drip"></span>
+            <span class="icing-drip"></span>
+            <span class="icing-drip"></span>
+            <span class="icing-drip"></span>
+            <span class="icing-drip"></span>
+          </div>
+        </div>
+      </div>
+
+      <aside
+        class="wish-note hidden"
+        id="wishNote"
+        role="status"
+        aria-live="polite"
+      >
+        <span class="wish-note-label">a little wish</span>
+        <p class="wish-note-message" id="wishNoteMessage"></p>
+      </aside>
+
+      <button
+        id="blowOutCandlesBtn"
+        type="button"
+        aria-label="Press and hold to blow out the candles"
+      >
+        <span class="blow-label">Hold to blow ♡</span>
+        <svg class="blow-ring" id="blowRing" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="blowRingGradient" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#fff0b8" />
+              <stop offset="100%" stop-color="#ff8fa8" />
+            </linearGradient>
+          </defs>
+          <path class="blow-ring-track" pathLength="100" />
+          <path class="blow-ring-fill" pathLength="100" />
+        </svg>
+      </button>
+      <button id="relightCandlesBtn" class="hidden">Make another wish ♡</button>
+      <button id="toFinaleBtn3" class="hidden">continue →</button>
+    </div>
+
+    <div class="scene hidden" id="page6">
+      <img
+        class="finale-background"
+        src="images/photo5.jpg"
+        alt=""
+        aria-hidden="true"
+      />
+      <canvas id="confettiCanvas"></canvas>
+      <div id="heartParticleLayer" class="heart-particle-layer" aria-hidden="true"></div>
+      <h1 class="finale-title" id="finaleTitle">
+        HAPPY 17TH BIRTHDAY ELENA!!!!
+        <button
+          class="heart-collectible"
+          type="button"
+          data-heart-id="finale"
+          aria-label="Collect hidden heart"
+          aria-pressed="false"
+        >♡</button>
+      </h1>
+      <p class="finale-sub">
+        I spent so much time making this website. I hope today I could show you
+        how much you mean to me :>.
+      </p>
+      <p class="heart-celebration-message hidden" id="heartCelebrationMessage" role="status">
+        You have collected all the hearts!
+      </p>
+      <button id="lastThingBtn" class="btn-primary">One last thing...</button>
+      <section class="finale-interaction hidden" id="finaleInteraction">
+        <button
+          class="final-envelope"
+          id="finalEnvelope"
+          type="button"
+          aria-label="Open your birthday letter"
+          aria-expanded="false"
+        >
+          <span class="envelope-back" aria-hidden="true"></span>
+          <span class="envelope-letter" aria-hidden="true"></span>
+          <span class="envelope-front" aria-hidden="true"></span>
+          <span class="envelope-flap" aria-hidden="true"></span>
+          <span class="envelope-seal" aria-hidden="true">♡</span>
+        </button>
+        <article
+          class="final-letter hidden"
+          id="finalMessage"
+          aria-live="polite"
+        >
+          <span class="final-letter-label">a little letter for you</span>
+          <p id="finalLetterMessage"></p>
+          <span
+            class="final-letter-closing"
+            id="finalLetterClosing"
+            aria-hidden="true"
+          >
+            :p
+          </span>
+          <div class="final-letter-controls">
+            <span id="finalLetterPageCount" aria-live="polite"></span>
+            <button id="nextLetterPageBtn" type="button">
+              Next page &rarr;
+            </button>
+          </div>
+          <button
+            class="final-letter-close"
+            id="closeFinalLetterBtn"
+            type="button"
+            aria-label="Put the letter back in the envelope"
+          >
+            &times;
+          </button>
+        </article>
+        <section class="gift-reveal" id="giftReveal">
+          <button
+            class="gift-box"
+            id="giftBox"
+            type="button"
+            aria-label="Tap to unwrap your gift, 0 of 5 taps"
+            aria-describedby="giftBoxHint"
+            aria-expanded="false"
+          >
+            <span class="gift-box-lid" aria-hidden="true"></span>
+            <span class="gift-box-body" aria-hidden="true"></span>
+            <span class="gift-box-ribbon gift-box-ribbon-vertical" aria-hidden="true"></span>
+            <span class="gift-box-ribbon gift-box-ribbon-horizontal" aria-hidden="true"></span>
+            <span class="gift-box-bow" aria-hidden="true">♡</span>
+            <span class="gift-box-sparkle" aria-hidden="true">✦</span>
+            <span class="gift-box-twinkle" aria-hidden="true"></span>
+            <span class="gift-box-twinkle" aria-hidden="true"></span>
+            <span class="gift-box-twinkle" aria-hidden="true"></span>
+            <span class="gift-box-twinkle" aria-hidden="true"></span>
+            <span class="gift-box-twinkle" aria-hidden="true"></span>
+            <span class="gift-box-twinkle" aria-hidden="true"></span>
+          </button>
+          <p class="gift-box-hint" id="giftBoxHint" aria-live="polite">
+            A little gift is waiting — tap the box 5 times ♡
+          </p>
+        </section>
+      </section>
+      <section
+        class="gift-spotlight hidden"
+        id="giftSpotlight"
+        role="dialog"
+        aria-modal="true"
+        aria-label="A birthday gift"
+        aria-describedby="giftSpotlightPrompt"
+        tabindex="-1"
+      >
+        <div class="gift-spotlight-content" aria-live="polite">
+          <div class="gift-spotlight-art">
+            <div class="gift-spotlight-glow" aria-hidden="true"></div>
+            <div
+              class="gift-spotlight-particles"
+              id="giftSpotlightParticles"
+              aria-hidden="true"
+            ></div>
+            <div class="gift-spotlight-entry">
+              <img class="gift-spotlight-image" id="giftSpotlightImage" alt="" />
+            </div>
+          </div>
+          <p class="gift-spotlight-name" id="giftSpotlightName"></p>
+          <p class="gift-spotlight-prompt" id="giftSpotlightPrompt">
+            Click anywhere at the blank area to continue.
+          </p>
+        </div>
+        <div class="gift-spotlight-box" id="giftSpotlightBox"></div>
+      </section>
+      <button id="replayConfettiBtn" class="hidden">Celebrate again ♡</button>
+      <button id="reliveBtn" class="relive-link" type="button">
+        relive it ↺
+      </button>
+      <p class="finale-birthday-date">October 11, 2026</p>
+    </div>
+
+    <div class="easter-egg hidden" id="easterEgg">
+      <div class="egg-box">
+        <p class="egg-title">ACCESS GRANTED.</p>
+        <p>you found the secret :)</p>
+        <p class="egg-small">
+          Congratulations. You have successfully hacked my extremely
+          sophisticated birthday website.
+        </p>
+        <p class="egg-small">(It was literally just JavaScript.)</p>
+        <button id="closeEggBtn">close</button>
+      </div>
+    </div>
+
+    <script src="script.js?v=3"></script>
+    <script src="fairy.js?v=2"></script>
+  </body>
+</html>
